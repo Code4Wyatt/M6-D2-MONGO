@@ -1,32 +1,28 @@
-import express from "express";
-import { Router } from "express";
-import { Category, Product, User, Review, ProductCategory } from "../../utils/db/models/index.js";
-import { Op } from "sequelize";
+import { Router } from "express"
+import ProductModel from "./schema.js"
 
-const productRouter = Router();
+const productRouter = Router()
 
 // Create Product
 productRouter.post("/", async (req, res, next) => {
     try {
-      console.log(req.body);
-      const product = await Product.create(req.body);
-      res.send(product);
+      const newProduct = new ProductModel(req.body);
+      res.send(newProduct);
     } catch (error) {
-        console.log(error);
         next(error);
     }
-});
+})
 
 // Get All Products
 productRouter.get("/", async (req, res, next) => {
     try {
-        const allProducts = await Product.findAll( {include: [ User, Review ]});
+        const allProducts = await ProductModel.find();
         res.send(allProducts);
     } catch (error) {
         console.log(error);
         next(error);
     }
-});
+})
 
 // Get First 10 Acoustic Guitar Products
 productRouter.get("/acoustic", async (req, res, next) => {
@@ -38,10 +34,9 @@ productRouter.get("/acoustic", async (req, res, next) => {
         {limit: 10});
         res.send(allProductsByCategory);
     } catch (error) {
-        console.log(error);
         next(error);
     }
-});
+})
 
 // Get Specific Product
 productRouter.get("/:id", async (req, res, next) => {
@@ -56,7 +51,7 @@ productRouter.get("/:id", async (req, res, next) => {
         console.log(error);
         next(error);
     }
-});
+})
 
 // Edit Product
 productRouter.put("/:id", async (req, res, next) => {
@@ -71,7 +66,7 @@ productRouter.put("/:id", async (req, res, next) => {
        console.log(error);
        next(error);
     }
-});
+})
 
 // Delete Product
 productRouter.delete("/:id", async (req, res, next) => {
@@ -91,6 +86,6 @@ productRouter.delete("/:id", async (req, res, next) => {
         console.log(error);
         next(error);
     }
-});
+})
 
-export default productRouter;
+export default productRouter

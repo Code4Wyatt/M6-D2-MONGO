@@ -1,12 +1,12 @@
-import express from "express";
-import cors from "cors";
-import { connectDB } from "./utils/db/index.js";
-import productRouter from "./services/product/routes.js";
-import reviewRouter from "./services/review/routes.js";
-import categoryRouter from "./services/categories/routes.js";
-import cartRouter from "./services/cart/routes.js";
-import usersRouter from "./services/users/routes.js";
+import express from "express"
+import cors from "cors"
+import productRouter from "./services/product/routes.js"
+import reviewRouter from "./services/review/routes.js"
+import categoryRouter from "./services/categories/routes.js"
+import cartRouter from "./services/cart/routes.js"
+import usersRouter from "./services/users/routes.js"
 import mongoose from "mongoose"
+import listEndpoints from "express-list-endpoints"
 import {badRequestHandler, genericErrorHandler, notFoundHandler} from "../src/errorHandlers.js"
 
 const whiteList = [process.env.FE_LOCAL_URL, process.env.FE_REMOTE_URL]
@@ -20,21 +20,30 @@ const corsOptions = {
             next(new Error("Not allowed by CORS"));
         }
     },
-};
+}
 
-const server = express();
+const server = express()
 
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 5001
 
-server.use(express.json());
-server.use(cors(corsOptions));
+// Middlewares //
 
-server.use("/category", categoryRouter);
-server.use("/product", productRouter);
-server.use("/review", reviewRouter);
-server.use("/user", usersRouter);
-server.use("/cart", cartRouter);
+server.use(express.json())
+server.use(cors(corsOptions))
 
+// Routes
+
+server.use("/category", categoryRouter)
+server.use("/product", productRouter)
+server.use("/review", reviewRouter)
+server.use("/user", usersRouter)
+server.use("/cart", cartRouter)
+
+// Error Handlers //
+
+server.use(badRequestHandler)
+server.use(notFoundHandler)
+server.use(genericErrorHandler)
 
 mongoose.connect(process.env.MONGO_CONNECTION)
 
@@ -51,4 +60,4 @@ mongoose.connection.on("error", error => {
     console.log(error)
 })
 
-export default server;
+export default server
