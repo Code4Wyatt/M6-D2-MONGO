@@ -1,65 +1,71 @@
 import express from "express";
-import {Product, User, Review} from "../../utils/db/models/index.js";
-import { Op } from "sequelize";
+import ReviewModel from "./schema.js"
 
-const reviewRouter = express.Router();
+const reviewRouter = express.Router()
 
+// Post Review
 reviewRouter.post("/", async (req, res, next) => {
     try {
-        const data = await Review.create(req.body);
-        res.send(data);
+        const newReview = new ReviewModel(req.body)
+        const { _id } = await newReview.save()
+        res.send(newReview)
     } catch (error) {
-        console.log(error);
-        next(error);
-    }
-});
-
-reviewRouter.get("/", async (req, res, next) => {
-    try {
-        const data = await Review.findAll({ include: [Product, User]});
-        res.send(data);
-    } catch (error) {
-        console.log(error);
-        next(error);
-    }
-});
-
-reviewRouter.get("/:id", async (req, res, next) => {
-    try {
-        const data = await Review.findByPk(req.params.id);
-        res.send(data);
-    } catch (error) {
-        console.log(error);
         next(error)
     }
 });
 
-reviewRouter.put("/:id", async (req, res, next) => {
+
+// Get All Reviews
+// populate product and user model below
+
+reviewRouter.get("/", async (req, res, next) => {
     try {
-        const { body } = req;
-        delete body.userId;
-        delete body.articleId;
-        const data = await Review.update(req.body, {
-            where: { 
-                id: req.params.id,
-            }
-        });
-        res.send(data);
+        const allReviews = await ReviewModel.find();
+        res.send(allReviews);
     } catch (error) {
-        console.log(error);
         next(error);
     }
 });
 
-reviewRouter.delete("/:id", async (req, res, next) => {
+// Get Specific Review
+
+reviewRouter.get("/:reviewId", async (req, res, next) => {
     try {
-        const data = await Review.destroy({ 
-            where: { id: req.params.id,
-            },
-        });
-        res.send({rows: data});
+        const review = await ReviewModel.findById(req.params.reviewId);
+        res.send(review);
     } catch (error) {
-        console.log(error);
+        next(error)
+    }
+});
+
+// Edit Review
+
+reviewRouter.put("/:reviewId", async (req, res, next) => {
+    try {
+        const reviewId = req.params.reviewId
+        const editedReview = await ReviewModel.findByIdAndUpdate(reviewId, req.body, { new: true });
+        if (editedReview) {
+            res.send(editedReview);
+        } else {
+            next(createHttpError(404, `Review with id ${reviewId} not found.`))
+        }
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Delete Review
+
+reviewRouter.delete("/:reviewId", async (req, res, next) => {
+    try {
+        const reviewId = req.params.reviewId
+        const deletedReview = await ReviewModel.findByIdAndDelete(reviewId)
+        if (deletedReview) {
+            res.status(204).send()
+        } else {
+            next(createHttpError(404, `Review with id ${reviewId} not found.`))
+        }
+    } catch (error) {
         next(error);
     }
 });

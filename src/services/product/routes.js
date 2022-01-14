@@ -6,20 +6,20 @@ const productRouter = Router()
 // Create Product
 productRouter.post("/", async (req, res, next) => {
     try {
-      const newProduct = new ProductModel(req.body);
-      res.send(newProduct);
+      const newProduct = new ProductModel(req.body)
+      const { _id } = await newProduct.save()
+      res.send(newProduct)
     } catch (error) {
-        next(error);
+        next(error)
     }
 })
 
 // Get All Products
 productRouter.get("/", async (req, res, next) => {
     try {
-        const allProducts = await ProductModel.find();
-        res.send(allProducts);
+        const allProducts = await ProductModel.find().limit(5)
+        res.send(allProducts)
     } catch (error) {
-        console.log(error);
         next(error);
     }
 })
@@ -27,21 +27,21 @@ productRouter.get("/", async (req, res, next) => {
 // Get First 10 Acoustic Guitar Products
 productRouter.get("/acoustic", async (req, res, next) => {
     try {
-        const allProductsByCategory = await Product.findAll( {where: {
+        const allProductsByCategory = await ProductModel.find( {where: {
             category:"Acoustic"
         },
         include: [ ProductCategory ]},
-        {limit: 10});
-        res.send(allProductsByCategory);
+        {limit: 10})
+        res.send(allProductsByCategory)
     } catch (error) {
-        next(error);
+        next(error)
     }
 })
 
 // Get Specific Product
 productRouter.get("/:id", async (req, res, next) => {
     try {
-        const product = await Product.findByPk(req.params.id);
+        const product = await ProductModel.findById(req.params.id).populate({ path: "reviews" });
         if (product) {
             res.send(product);
         } else {

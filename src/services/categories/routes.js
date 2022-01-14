@@ -1,19 +1,18 @@
 import express from "express";
-import { Product, User, Review, Category } from "../../utils/db/models/index.js";
-import { Op } from "sequelize";
+import CategoryModel from "./schema.js"
 
 const categoryRouter = express.Router();
 
-categoryRouter.post("/bulk", async(req, res, next) => {
+categoryRouter.post("/bulk", async (req, res, next) => {
     try {
-        const data = await Category.bulkCreate([
+        const bulkCategories = await CategoryModel.insertMany([
             { name: "Accoustic" },
             { name: "Electric" },
             { name: "Bass" },
             { name: "Equipment" },
         ]);
 
-        res.send(data);
+        res.send(bulkCategories);
     } catch (error) {
         console.log(error);
         next(error);
@@ -22,7 +21,7 @@ categoryRouter.post("/bulk", async(req, res, next) => {
 
 categoryRouter.get("/", async(req, res, next) => {
     try {
-        const data = await Category.findAll();
+        const data = await CategoryModel.find();
         res.send(data);
     } catch (error) {
         console.log(error);

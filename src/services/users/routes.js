@@ -20,8 +20,8 @@ usersRouter.get("/", async (req, res, next) => {
 usersRouter.post("/", async (req, res, next) => {
     try {
         const newUser = new UserModel(req.body)
-        const { _id } = await newUser.create()
-        res.status(201).send({ _id });
+        const { _id } = await newUser.save()
+        res.status(201).send(newUser);
     } catch (error) {
         console.log(error);
         next(error);

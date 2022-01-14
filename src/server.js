@@ -3,7 +3,6 @@ import cors from "cors"
 import productRouter from "./services/product/routes.js"
 import reviewRouter from "./services/review/routes.js"
 import categoryRouter from "./services/categories/routes.js"
-import cartRouter from "./services/cart/routes.js"
 import usersRouter from "./services/users/routes.js"
 import mongoose from "mongoose"
 import listEndpoints from "express-list-endpoints"
@@ -37,7 +36,6 @@ server.use("/category", categoryRouter)
 server.use("/product", productRouter)
 server.use("/review", reviewRouter)
 server.use("/user", usersRouter)
-server.use("/cart", cartRouter)
 
 // Error Handlers //
 
